@@ -9,6 +9,7 @@ import { AlertPanel } from "@/components/alerts/AlertPanel";
 import { buildAlerts, countUnread, type HazardAlert } from "@/lib/alerts";
 import { indexReports } from "@/lib/geo";
 import type { LoadDemoData, RunHazardAnalysis } from "./contracts";
+import { DEFAULT_ST_DBSCAN_OPTIONS as D } from "@/lib/clustering";
 
 type Phase = "idle" | "loading" | "loaded" | "analyzing" | "analyzed";
 
@@ -32,17 +33,17 @@ function DetectionRules() {
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="rounded-lg bg-civic-soft p-3">
-          <p className="text-lg font-semibold text-civic">500 m</p>
+          <p className="text-lg font-semibold text-civic">{D.spatialRadiusMeters} m</p>
           <p className="text-xs text-slate-600">Spatial radius</p>
         </div>
 
         <div className="rounded-lg bg-civic-soft p-3">
-          <p className="text-lg font-semibold text-civic">30 min</p>
+          <p className="text-lg font-semibold text-civic">{D.temporalWindowMinutes} min</p>
           <p className="text-xs text-slate-600">Time window</p>
         </div>
 
         <div className="rounded-lg bg-civic-soft p-3">
-          <p className="text-lg font-semibold text-civic">≥ 5</p>
+          <p className="text-lg font-semibold text-civic">≥ {D.minReports}</p>
           <p className="text-xs text-slate-600">Reports required</p>
         </div>
 
@@ -282,10 +283,12 @@ export function HazardMonitor({ loadDemoData, runAnalysis, city = "Pune" }: Prop
     DEMO DATA · Pune
   </span>
 
-  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
-    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-    ST-DBSCAN connected
-  </span>
+      {!notConnected && (
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+      ST-DBSCAN connected
+    </span>
+  )}
 </div>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -324,7 +327,7 @@ export function HazardMonitor({ loadDemoData, runAnalysis, city = "Pune" }: Prop
           <p>
             Analysis modules are not connected yet. Export <code className="font-mono">loadDemoData</code> and{" "}
             <code className="font-mono">runHazardAnalysis</code> from{" "}
-            <code className="font-mono">src/lib/monitor/adapters.ts</code> (wired to Developer 2&apos;s demo data and
+            <code className="font-mono">src/lib/monitor/adapters.ts</code> (wired to the Pune demo data and
             ST-DBSCAN). No placeholder results are shown.
           </p>
         </div>

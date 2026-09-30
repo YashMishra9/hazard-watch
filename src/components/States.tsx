@@ -29,9 +29,9 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
 
 export function Panel({ title, action, children, id }: { title: string; action?: ReactNode; children: ReactNode; id?: string }) {
   return (
-    <section id={id} className="rounded-xl border border-line bg-white">
-      <div className="flex items-center justify-between border-b border-line px-4 py-3">
-        <h2 className="font-semibold">{title}</h2>{action}
+        <section id={id} className="overflow-hidden rounded-2xl border border-line bg-white">
+      <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3.5">
+        <h2 className="font-display text-lg font-semibold tracking-tight">{title}</h2>{action}
       </div>
       {children}
     </section>

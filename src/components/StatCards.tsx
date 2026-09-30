@@ -2,11 +2,21 @@ import { Flame, Layers, MapPin, TriangleAlert, type LucideIcon } from "lucide-re
 import type { HazardCluster, HazardReport } from "@/types/hazard";
 import { CATEGORIES, SEVERITIES } from "@/lib/constants";
 
-function Stat({ label, value, icon: Icon }: { label: string; value: number; icon: LucideIcon }) {
+type Tone = "plain" | "signal" | "alert";
+const TONE: Record<Tone, string> = {
+  plain: "bg-white text-slate-700",
+  signal: "bg-signal text-civic-dark",
+  alert: "bg-rose-50 text-rose-900",
+};
+
+function Stat({ label, value, icon: Icon, tone = "plain", className = "" }: { label: string; value: number; icon: LucideIcon; tone?: Tone; className?: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-line bg-white p-4">
-      <div className="rounded-lg bg-civic-soft p-2.5 text-civic"><Icon size={20} /></div>
-      <div><p className="text-2xl font-semibold leading-none">{value}</p><p className="mt-1 text-sm text-slate-600">{label}</p></div>
+    <div className={`flex flex-col justify-between gap-5 p-4 ${TONE[tone]} ${className}`}>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-sm font-medium">{label}</p>
+        <Icon size={18} aria-hidden />
+      </div>
+      <p className="font-display text-4xl font-bold leading-none tabular-nums text-ink">{value}</p>
     </div>
   );
 }
@@ -16,12 +26,12 @@ export function StatCards({ reports, clusters }: { reports: HazardReport[]; clus
   const unvalidatedReports = Math.max(0, reports.length - reportsInHotspots);
 
   return (
-    <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+    <div className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line lg:grid-cols-5">
       <Stat label="Total reports" value={reports.length} icon={Layers} />
-      <Stat label="Validated hotspots" value={clusters.length} icon={Flame} />
-      <Stat label="High severity" value={reports.filter((r) => r.severity === "high").length} icon={TriangleAlert} />
+      <Stat label="Validated hotspots" value={clusters.length} icon={Flame} tone="signal" />
+      <Stat label="High severity" value={reports.filter((r) => r.severity === "high").length} icon={TriangleAlert} tone="alert" />
       <Stat label="Reports in hotspots" value={reportsInHotspots} icon={MapPin} />
-<Stat label="Unvalidated reports" value={unvalidatedReports} icon={TriangleAlert} />
+      <Stat label="Unvalidated reports" value={unvalidatedReports} icon={TriangleAlert} className="col-span-2 lg:col-span-1" />
     </div>
   );
 }

@@ -1,13 +1,25 @@
 @import "tailwindcss";
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
-  --color-paper: #f5f6f3;
-  --color-ink: #16211f;
-  --color-line: #dfe3dc;
-  --color-civic: #0f6b5f;
-  --color-civic-dark: #0a4a42;
-  --color-civic-soft: #dcefe9;
+  --color-paper: #eef1f4;
+  --color-ink: #10233b;
+  --color-line: #d5dce4;
+  --color-civic: #163a63;
+  --color-civic-dark: #0c2340;
+  --color-civic-soft: #e1eaf4;
+  --color-signal: #ffc83d;
 }
-body { background: var(--color-paper); color: var(--color-ink); font-family: var(--font-sans); }
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--nf-body), ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+}
+h1, h2, .font-display {
+  font-family: var(--nf-display), ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+}
+/* Road-works tape: the one signature element. Used on the brand bar and the hero edge only. */
+.hazard-stripe {
+  background: repeating-linear-gradient(-45deg, var(--color-signal) 0 8px, var(--color-civic-dark) 8px 16px);
+}
 :focus-visible { outline: 2px solid var(--color-civic); outline-offset: 2px; }
+.on-dark :focus-visible { outline-color: var(--color-signal); }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }

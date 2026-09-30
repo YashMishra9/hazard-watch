@@ -130,12 +130,12 @@ export function ReportForm() {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label htmlFor="lat" className="mb-1 block text-xs text-slate-600">Latitude</label>
-            <input id="lat" inputMode="decimal" value={lat} onChange={(e) => setLat(e.target.value)} placeholder="18.5204" aria-invalid={!!errors.latitude} aria-describedby="latitude-err" className={input("latitude")} />
+            <input id="lat" inputMode="decimal" value={lat} onChange={(e) => setLat(e.target.value)} placeholder="18.5204" aria-invalid={!!errors.latitude} aria-describedby={errors.latitude ? "latitude-err" : undefined}className={input("latitude")} />
             {err("latitude")}
           </div>
           <div>
             <label htmlFor="lng" className="mb-1 block text-xs text-slate-600">Longitude</label>
-            <input id="lng" inputMode="decimal" value={lng} onChange={(e) => setLng(e.target.value)} placeholder="73.8567" aria-invalid={!!errors.longitude} aria-describedby="longitude-err" className={input("longitude")} />
+            <input id="lng" inputMode="decimal" value={lng} onChange={(e) => setLng(e.target.value)} placeholder="73.8567" aria-invalid={!!errors.longitude} aria-describedby={errors.longitude ? "longitude-err" : undefined} className={input("longitude")} />
             {err("longitude")}
           </div>
         </div>
@@ -164,7 +164,7 @@ export function ReportForm() {
         {err("photo")}
       </div>
 
-      <button type="submit" disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-lg bg-civic px-4 py-3 font-medium text-white hover:bg-civic-dark disabled:opacity-60">
+      <button type="submit" disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-xl bg-signal px-4 py-3.5 font-semibold text-civic-dark hover:brightness-95 disabled:opacity-60">
         {busy ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />} Submit report
       </button>
     </form>

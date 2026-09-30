@@ -4,9 +4,9 @@ import type { HazardCategory, Severity } from "@/types/hazard";
 export const PUNE_CENTER: [number, number] = [18.5204, 73.8567];
 export const PUNE_ZOOM = 12;
 
-export const OSM_TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+export const OSM_TILE_URL = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
 export const OSM_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
 export const CATEGORIES: HazardCategory[] = ["flooding", "pothole", "ewaste", "plastic"];
 export const SEVERITIES: Severity[] = ["low", "medium", "high"];

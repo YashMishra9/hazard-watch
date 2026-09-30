@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
+import { it } from "vitest";
 import type { HazardCluster, HazardReport } from "../src/types/hazard";
 import { buildAlerts, countUnread, alertIdForCluster } from "../src/lib/alerts";
 import { clusterRadiusMeters, getContributingReports, haversineMeters, indexReports, pointsForCluster } from "../src/lib/geo";
 import { formatCoords, formatTimestamp } from "../src/lib/format";
 import { fixtureClusters, fixtureReports } from "../src/dev/mapFixtures";
 
-let n = 0;
-const t = (name: string, fn: () => void) => { fn(); n++; console.log("  ok -", name); };
+const t = it;
 
 t("haversine: known distance Pune<->Mumbai ~120km", () => {
   const d = haversineMeters(18.5204, 73.8567, 19.076, 72.8777) / 1000;
@@ -81,4 +81,4 @@ t("fixtures: members lie within computed radius of centroid", () => {
 t("fixtures: all points inside Pune area", () => {
   for (const r of fixtureReports) assert.ok(r.latitude > 18.4 && r.latitude < 18.7 && r.longitude > 73.7 && r.longitude < 74.0, r.id);
 });
-console.log(`\n${n} tests passed`);
+

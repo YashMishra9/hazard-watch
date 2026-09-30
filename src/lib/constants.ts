@@ -17,5 +17,4 @@ export const SEVERITIES: { value: Severity; label: string; rank: number; chip: s
 export const categoryMeta = (c: HazardCategory) => CATEGORIES.find((x) => x.value === c)!;
 export const severityMeta = (s: Severity) => SEVERITIES.find((x) => x.value === s)!;
 
-export const formatDate = (iso: string) =>
-  new Date(iso).toLocaleString(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+export { formatTimestamp as formatDate } from "@/lib/format";

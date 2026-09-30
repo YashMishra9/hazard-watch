@@ -42,7 +42,7 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold">Authority dashboard</h1>
+          <h1 className="font-display text-3xl font-bold tracking-tight">Authority dashboard</h1>
           <p className="mt-1 text-sm text-slate-600">Citizen reports and the hotspots validated from them.</p>
         </div>
         {reports.length > 0 && (

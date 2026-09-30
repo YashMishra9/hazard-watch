@@ -2,4 +2,7 @@ node_modules/
 .next/
 .env
 .env.local
-.env.*.localgit rm -r --cached node_modules
+.env.*.local
+.vercel/
+*.tsbuildinfo
+coverage/

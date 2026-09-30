@@ -5,8 +5,8 @@ import { loadDemoData, runHazardAnalysis } from "@/lib/monitor/adapters";
 
 export default function MonitorPage() {
   return (
-    <main className="mx-auto max-w-7xl p-4 sm:p-6">
+    <div className="mx-auto max-w-7xl">
       <HazardMonitor loadDemoData={loadDemoData} runAnalysis={runHazardAnalysis} />
-    </main>
+    </div>
   );
 }
