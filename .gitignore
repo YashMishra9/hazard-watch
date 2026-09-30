@@ -1,0 +1,5 @@
+node_modules/
+.next/
+.env
+.env.local
+.env.*.localgit rm -r --cached node_modules
