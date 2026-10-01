@@ -2,9 +2,12 @@
 import { useRef, useState } from "react";
 import { Camera, Crosshair, Loader2, Send, X } from "lucide-react";
 import type { HazardCategory, Severity } from "@/types/hazard";
-import { CATEGORIES, SEVERITIES } from "@/lib/constants";
+import { CATEGORIES } from "@/lib/constants";
 import { hazardService } from "@/lib/hazardService";
 import { useToast } from "./Toast";
+import { SeveritySlider } from "./SeveritySlider";
+import { getDeviceId } from "@/lib/deviceId";
+import { MAX_URGENT_PER_HOUR, urgentInLastHour } from "@/lib/credibility";
 
 type Errors = Partial<Record<"category" | "severity" | "latitude" | "longitude" | "description" | "photo", string>>;
 
@@ -31,7 +34,10 @@ export function ReportForm() {
   const toast = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
   const [category, setCategory] = useState<HazardCategory | null>(null);
-  const [severity, setSeverity] = useState<Severity | null>(null);
+    const [severity, setSeverity] = useState<Severity | null>(null);
+    const [needsResponse, setNeedsResponse] = useState(false);
+  const [locSource, setLocSource] = useState<"gps" | "manual">("manual");
+  const [accuracy, setAccuracy] = useState<number | undefined>();
   const [description, setDescription] = useState("");
   const [lat, setLat] = useState("");
   const [lng, setLng] = useState("");
@@ -44,7 +50,7 @@ export function ReportForm() {
     if (!navigator.geolocation) return toast("Geolocation isn’t supported here. Enter coordinates manually.", "error");
     setLocating(true);
     navigator.geolocation.getCurrentPosition(
-      (p) => { setLat(p.coords.latitude.toFixed(6)); setLng(p.coords.longitude.toFixed(6)); setLocating(false); setErrors((e) => ({ ...e, latitude: undefined, longitude: undefined })); },
+      (p) => { setLat(p.coords.latitude.toFixed(6)); setLng(p.coords.longitude.toFixed(6)); setLocSource("gps"); setAccuracy(Math.round(p.coords.accuracy)); setLocating(false); setErrors((e) => ({ ...e, latitude: undefined, longitude: undefined })); },
       () => { setLocating(false); toast("Couldn’t get your location. Allow access or enter coordinates.", "error"); },
       { enableHighAccuracy: true, timeout: 10000 },
     );
@@ -72,15 +78,25 @@ export function ReportForm() {
     ev.preventDefault();
     const e = validate();
     setErrors(e);
-    if (Object.keys(e).length) return;
+        if (Object.keys(e).length) return;
+    const deviceId = getDeviceId();
+    if (severity === "high" && needsResponse) {
+      const existing = await hazardService.getReports();
+      if (urgentInLastHour(existing, deviceId) >= MAX_URGENT_PER_HOUR) {
+        toast("You have reached the limit of urgent requests for this hour. If someone is in danger, call 112.", "error");
+        return;
+      }
+    }
     setBusy(true);
     try {
       const r = await hazardService.addReport({
         category: category!, severity: severity!, latitude: Number(lat), longitude: Number(lng),
         description: description.trim() || undefined, photoUrl: photo,
+        needsResponse: severity === "high" && needsResponse ? true : undefined,
+        deviceId, locationSource: locSource, locationAccuracyM: locSource === "gps" ? accuracy : undefined,
       });
       toast(`Report submitted (${r.id})`);
-      setCategory(null); setSeverity(null); setDescription(""); setPhoto(undefined);
+      setCategory(null); setSeverity(null); setNeedsResponse(false); setDescription(""); setPhoto(undefined);
       if (fileRef.current) fileRef.current.value = "";
     } catch {
       toast("Couldn’t save the report. Storage may be full — remove the photo and retry.", "error");
@@ -107,18 +123,7 @@ export function ReportForm() {
         {err("category")}
       </fieldset>
 
-      <fieldset>
-        <legend className="mb-2 text-sm font-medium">How severe is it?</legend>
-        <div className="grid grid-cols-3 gap-2">
-          {SEVERITIES.map((s) => (
-            <label key={s.value} className={`cursor-pointer rounded-lg border px-3 py-2.5 text-center text-sm has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-civic ${severity === s.value ? "border-civic bg-civic-soft font-medium" : "border-line hover:bg-slate-50"}`}>
-              <input type="radio" name="severity" value={s.value} checked={severity === s.value} onChange={() => setSeverity(s.value)} className="sr-only" />
-              <span className={`mr-2 inline-block h-2 w-2 rounded-full ${s.bar}`} />{s.label}
-            </label>
-          ))}
-        </div>
-        {err("severity")}
-      </fieldset>
+            <SeveritySlider value={severity} onChange={setSeverity} needsResponse={needsResponse} onNeedsResponseChange={setNeedsResponse} error={errors.severity} />
 
       <div>
         <div className="mb-2 flex items-center justify-between">
@@ -130,12 +135,12 @@ export function ReportForm() {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label htmlFor="lat" className="mb-1 block text-xs text-slate-600">Latitude</label>
-            <input id="lat" inputMode="decimal" value={lat} onChange={(e) => setLat(e.target.value)} placeholder="18.5204" aria-invalid={!!errors.latitude} aria-describedby={errors.latitude ? "latitude-err" : undefined}className={input("latitude")} />
+            <input id="lat" inputMode="decimal" value={lat} onChange={(e) => { setLat(e.target.value); setLocSource("manual"); }} placeholder="18.5204" aria-invalid={!!errors.latitude} aria-describedby={errors.latitude ? "latitude-err" : undefined}className={input("latitude")} />
             {err("latitude")}
           </div>
           <div>
             <label htmlFor="lng" className="mb-1 block text-xs text-slate-600">Longitude</label>
-            <input id="lng" inputMode="decimal" value={lng} onChange={(e) => setLng(e.target.value)} placeholder="73.8567" aria-invalid={!!errors.longitude} aria-describedby={errors.longitude ? "longitude-err" : undefined} className={input("longitude")} />
+            <input id="lng" inputMode="decimal" value={lng} onChange={(e) => { setLng(e.target.value); setLocSource("manual"); }} placeholder="73.8567" aria-invalid={!!errors.longitude} aria-describedby={errors.longitude ? "longitude-err" : undefined} className={input("longitude")} />
             {err("longitude")}
           </div>
         </div>

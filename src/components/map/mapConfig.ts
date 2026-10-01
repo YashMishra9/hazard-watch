@@ -4,9 +4,20 @@ import type { HazardCategory, Severity } from "@/types/hazard";
 export const PUNE_CENTER: [number, number] = [18.5204, 73.8567];
 export const PUNE_ZOOM = 12;
 
-export const OSM_TILE_URL = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
-export const OSM_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+// Basemap choice. NEXT_PUBLIC_MAP_STYLE can be "light", "voyager" or "osm" (default: "light").
+// CARTO styles need a free key (NEXT_PUBLIC_CARTO_KEY); "osm" and the no-key fallback use plain
+// OpenStreetMap tiles.
+const CARTO_KEY = process.env.NEXT_PUBLIC_CARTO_KEY?.trim();
+const MAP_STYLE = (process.env.NEXT_PUBLIC_MAP_STYLE ?? "light").trim().toLowerCase();
+const useCarto = !!CARTO_KEY && MAP_STYLE !== "osm";
+const cartoStyle = MAP_STYLE === "voyager" ? "voyager" : "light_all";
+
+export const OSM_TILE_URL = useCarto
+  ? `https://{s}.basemaps.cartocdn.com/rastertiles/${cartoStyle}/{z}/{x}/{y}.png?key=${encodeURIComponent(CARTO_KEY!)}`
+  : "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+export const OSM_ATTRIBUTION = useCarto
+  ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>'
+  : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 export const CATEGORIES: HazardCategory[] = ["flooding", "pothole", "ewaste", "plastic"];
 export const SEVERITIES: Severity[] = ["low", "medium", "high"];

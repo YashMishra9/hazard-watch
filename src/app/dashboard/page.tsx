@@ -10,6 +10,7 @@ import { ReportFilters, type Filters } from "@/components/ReportFilters";
 import { ReportList } from "@/components/ReportList";
 import { ReportDetails } from "@/components/ReportDetails";
 import { ClusterList } from "@/components/ClusterList";
+import { UrgentQueue } from "@/components/UrgentQueue";
 import { EmptyState, ErrorState, LoadingState, Panel } from "@/components/States";
 import { useToast } from "@/components/Toast";
 import { HazardMap } from "@/components/map/HazardMap";
@@ -51,6 +52,8 @@ export default function DashboardPage() {
         )}
       </div>
 
+            <UrgentQueue reports={reports} />
+
       <StatCards reports={reports} clusters={clusters} />
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
@@ -59,7 +62,7 @@ export default function DashboardPage() {
           <Panel title="Validated hotspots">
             {clusters.length === 0
               ? <EmptyState icon={Flame} title="No validated hotspots" body="Hotspots appear once enough nearby reports are clustered." />
-              : <ClusterList clusters={clusters} />}
+              : <ClusterList clusters={clusters} reports={reports} />}
           </Panel>
           <Panel title="Recent alerts">
             <AlertPanel

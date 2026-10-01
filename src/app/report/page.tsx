@@ -1,51 +1,48 @@
 "use client";
+import Link from "next/link";
+import { Clock, MapPin, Users } from "lucide-react";
 import { ReportForm } from "@/components/ReportForm";
 import { ReportList } from "@/components/ReportList";
 import { EmptyState, ErrorState, LoadingState, Panel } from "@/components/States";
+import { HeroMap } from "@/components/HeroMap";
 import { useHazardData } from "@/hooks/useHazardData";
 import { DEFAULT_ST_DBSCAN_OPTIONS as RULE } from "@/lib/clustering";
 
-/** The validation rule drawn the way the map draws it: a dashed extent circle, reports inside, a count badge. */
-function RuleDiagram({ className = "" }: { className?: string }) {
-  const dots: [number, number][] = [[96, 50], [148, 80], [132, 142], [68, 136], [52, 88]];
-  return (
-    <svg viewBox="0 0 200 200" className={className} role="img" aria-label={`${RULE.minReports} reports close together form a hotspot`}>
-      <circle cx="100" cy="100" r="86" fill="#ffc83d" fillOpacity="0.1" stroke="#ffc83d" strokeWidth="2" strokeDasharray="7 7" />
-      {dots.map(([x, y]) => (
-        <g key={`${x}-${y}`}>
-          <line x1="100" y1="100" x2={x} y2={y} stroke="#ffffff" strokeOpacity="0.25" strokeWidth="1.5" />
-          <circle cx={x} cy={y} r="7" fill="#ffffff" />
-        </g>
-      ))}
-      <circle cx="100" cy="100" r="19" fill="#ffc83d" stroke="#0c2340" strokeWidth="4" />
-      <text x="100" y="106.5" textAnchor="middle" fontSize="19" fontWeight="700" fill="#0c2340">{RULE.minReports}</text>
-    </svg>
-  );
-}
+const FADE = "linear-gradient(to right, transparent, #000 38%)";
 
 export default function ReportPage() {
   const { reports, status, error, reload } = useHazardData();
   return (
     <div className="space-y-8">
-      <section className="relative overflow-hidden rounded-3xl bg-civic-dark text-white">
+      <section className="relative isolate overflow-hidden rounded-3xl bg-civic-dark text-white">
+        <HeroMap
+          count={RULE.minReports}
+          className="absolute inset-y-0 right-0 -z-10 h-full w-full opacity-40 md:w-[64%] md:opacity-100"
+          style={{ WebkitMaskImage: FADE, maskImage: FADE }}
+        />
         <div className="hazard-stripe absolute inset-y-0 left-0 w-2" aria-hidden />
-        <div className="grid items-center gap-6 py-8 pl-9 pr-6 sm:py-10 md:grid-cols-[1fr_auto] md:pr-10">
-          <div>
-            <h1 className="max-w-xl text-3xl font-bold leading-[1.05] tracking-tight sm:text-5xl">
-              A hazard becomes official at {RULE.minReports} reports.
-            </h1>
-            <p className="mt-4 max-w-lg text-base text-white/80">
-              Report a pothole, flooding, e-waste or plastic dumping. When {RULE.minReports} people report the same kind of hazard
-              within {RULE.spatialRadiusMeters} m and {RULE.temporalWindowMinutes} minutes of each other, it shows up as a validated
-              hotspot on the authority dashboard.
-            </p>
+        <div className="relative py-10 pl-9 pr-6 sm:py-14 md:max-w-[36rem] lg:max-w-[40rem]">
+          <h1 className="text-4xl font-bold leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl">
+            A hazard becomes official at {RULE.minReports} reports.
+          </h1>
+          <p className="mt-5 max-w-lg text-base text-white/80 sm:text-lg">
+            Spot a pothole, flooding, e-waste or plastic dumping? Report it. When {RULE.minReports} neighbours report the same hazard
+            close together, it lands on the authority dashboard as a validated hotspot.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-2 text-sm">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/25 px-3 py-1.5"><Users size={15} aria-hidden /> {RULE.minReports} reports</span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/25 px-3 py-1.5"><MapPin size={15} aria-hidden /> within {RULE.spatialRadiusMeters} m</span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/25 px-3 py-1.5"><Clock size={15} aria-hidden /> within {RULE.temporalWindowMinutes} minutes</span>
           </div>
-          <RuleDiagram className="h-28 w-28 md:h-44 md:w-44" />
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <a href="#report" className="rounded-xl bg-signal px-6 py-3.5 font-semibold text-civic-dark hover:brightness-95">Report a hazard</a>
+            <Link href="/dashboard" className="rounded-xl border border-white/30 px-6 py-3.5 font-semibold hover:bg-white/10">See the dashboard</Link>
+          </div>
         </div>
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        <div>
+        <div id="report" className="scroll-mt-6">
           <h2 className="text-2xl font-semibold tracking-tight">What did you see?</h2>
           <p className="mb-5 mt-1 text-sm text-slate-600">Prototype: reports are saved on this device only.</p>
           <ReportForm />

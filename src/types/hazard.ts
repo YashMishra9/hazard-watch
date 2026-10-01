@@ -14,7 +14,14 @@ export interface HazardReport {
   category: HazardCategory;
   severity: Severity;
   description?: string;
-  photoUrl?: string;
+    photoUrl?: string;
+  /** Reporter asked the authorities to send a team (only offered for dangerous hazards). */
+    needsResponse?: boolean;
+  /** Anonymous per-browser id, used for rate limits and spotting repeat false reports. */
+  deviceId?: string;
+  locationSource?: "gps" | "manual";
+  /** GPS accuracy in metres, when locationSource is "gps". */
+  locationAccuracyM?: number;
 }
 
 export interface HazardCluster {

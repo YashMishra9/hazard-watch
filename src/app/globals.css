@@ -23,3 +23,47 @@ h1, h2, .font-display {
 :focus-visible { outline: 2px solid var(--color-civic); outline-offset: 2px; }
 .on-dark :focus-visible { outline-color: var(--color-signal); }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+
+
+/* Severity slider: big thumb (44px touch target) on a green-amber-red track. */
+.severity-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #16a34a, #f59e0b 50%, #dc2626);
+  outline-offset: 10px;
+}
+.severity-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #fff;
+  border: 6px solid var(--color-civic-dark);
+  box-shadow: 0 2px 8px rgba(12, 35, 64, 0.35);
+  cursor: grab;
+}
+.severity-range::-moz-range-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #fff;
+  border: 6px solid var(--color-civic-dark);
+  box-shadow: 0 2px 8px rgba(12, 35, 64, 0.35);
+  cursor: grab;
+}
+.severity-range[data-untouched="true"]::-webkit-slider-thumb { border-color: #94a3b8; }
+.severity-range[data-untouched="true"]::-moz-range-thumb { border-color: #94a3b8; }
+
+
+/* Hero: one orchestrated sequence (pins land, ring opens, count pops). With reduced motion the final state shows. */
+.hm-drop, .hm-expand, .hm-pop { transform-box: fill-box; transform-origin: center; animation-fill-mode: backwards; }
+.hm-drop { animation: hm-drop 0.55s cubic-bezier(0.2, 0.8, 0.3, 1.25); }
+.hm-expand { animation: hm-expand 0.7s ease-out; }
+.hm-pop { animation: hm-pop 0.5s cubic-bezier(0.3, 1.4, 0.5, 1); }
+@keyframes hm-drop { from { opacity: 0; transform: translateY(-34px); } 60% { opacity: 1; } to { opacity: 1; transform: translateY(0); } }
+@keyframes hm-expand { from { opacity: 0; transform: scale(0.3); } to { opacity: 1; transform: scale(1); } }
+@keyframes hm-pop { 0% { opacity: 0; transform: scale(0); } 70% { transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }

@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, MapPinned, Radar, TriangleAlert, type LucideIcon } from "lucide-react";
+import { LayoutDashboard, MapPinned, Radar, type LucideIcon } from "lucide-react";
+import { LogoMark } from "./Logo";
 import type { ReactNode } from "react";
 
 const NAV: { href: string; label: string; short: string; icon: LucideIcon }[] = [
@@ -13,9 +14,7 @@ const NAV: { href: string; label: string; short: string; icon: LucideIcon }[] = 
 function Brand() {
   return (
     <Link href="/report" className="flex items-center gap-3">
-      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-signal text-civic-dark">
-        <TriangleAlert size={20} strokeWidth={2.5} aria-hidden />
-      </span>
+            <LogoMark className="h-10 w-10 shrink-0" />
       <span className="font-display text-xl font-bold leading-none tracking-tight">Hazard Watch</span>
     </Link>
   );
